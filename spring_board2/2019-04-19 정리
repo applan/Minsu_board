@@ -1,0 +1,6 @@
+data :JSON.stringify({ // JSON형식으로 보내준다는 의미
+
+$.getJSON  ==  dataType : "json"  // 받을떄 JSON형태로 받는다는 의미
+
+
+데이터 베이스는 없고 폴더에만 존재하는 파일 삭제 => Quartz 라이브러리 [스케쥴링]

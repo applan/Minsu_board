@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mapper.BoardMapper">
+ <!-- <insert id="insert"> 단순히 insert만 할꺼면 사용하는 것
+   insert into spring_board(bno, title, content, writer)
+   values(seq_board.nextVal,#{title},#{content},#{writer})
+ </insert> -->
+ 
+ <insert id="insertSelectKey"> <!-- bno값을 저장하기 위함 -->
+   <selectKey keyProperty="bno" order="BEFORE" resultType="int"> <!-- 이것부터 실행됨  -->
+     select seq_board.nextVal from dual <!-- dual : 임시 테이블 -->
+   </selectKey> 
+     insert into spring_board(bno, title, content, writer)
+     values(#{bno},#{title},#{content},#{writer})
+ </insert>
+ 
+ 
+<!--  <select id="getList" resultType="com.spring.domain.BoardVO">
+  select bno,title,content,writer,regdate,updatedate from spring_board where bno >0 order by bno desc
+ </select>
+ -->
+  <!--  <select id="getList" resultType="com.spring.domain.BoardVO"> 
+  <![CDATA[                                                 
+   select bno,title,content,writer,regdate,updatedate
+   from(
+    select /*+ INDEX_DESC(spring_board pk_spring_board) */  
+       rownum rn, bno, title, content, writer, regdate, updatedate
+      from spring_board where rownum <= #{pageNum} * #{amount}
+   )where rn > (#{pageNum}-1)*#{amount}
+   ]]>
+ </select> -->
+ 
+ <!-- 검색 기준이 들어오는 경우와 안들어오는 두 가지 경우 처리 -->
+ <select id="getList" resultType="com.spring.domain.BoardVO"> <!-- 페이지 번호를 이용해서 뽑아내기 -->
+  <![CDATA[                                                 
+   select bno,title,content,writer,regdate,updatedate,replycnt
+   from(
+    select /*+ INDEX_DESC(spring_board pk_spring_board) */  
+       rownum rn, bno, title, content, writer, regdate, updatedate,replycnt
+      from spring_board where
+     ]]>
+     <include refid="criteria"></include>
+     <![CDATA[
+       rownum <= #{pageNum} * #{amount}) where rn > (#{pageNum}-1)*#{amount}
+   ]]>
+ </select> 
+ 
+ <!-- 댓글 카운트 수 변경 -->
+ <update id="updateReplyCnt">
+    update spring_board set replycnt=replycnt+#{amount} where bno=#{bno}
+ </update>
+
+ <select id="read" resultType="com.spring.domain.BoardVO">
+  select bno,title,content,writer,regdate,updatedate from spring_board where bno=#{bno}
+ </select>
+ 
+ <delete id="delete">
+  delete from spring_board where bno = #{bno}
+ </delete>
+ 
+ <update id="update">
+  update spring_board set updatedate=sysdate,title = #{title}, content=#{content} where bno = #{bno} 
+ </update>
+ 
+ <!-- 전체 게시물 수 구하기  -->
+ <select id="countTBL" resultType="int">
+  select count(*) from spring_board where
+  <include refid="criteria"></include> <!-- 값이 오면 처리해주고 값이 없으면 처리 안함  (criteria에 값이 없으면 그냥 아예 빈칸됨)-->
+  <!-- criteria에 값이 있는 경우 sql : ( title like '%'|| ? ||'%' OR writer like '%'|| ? ||'%' ) AND bno >0 
+       criteria에 값이 없는 경우 sql :                                                           AND bno >0-->
+  bno > 0
+ </select>
+ 
+ <!-- 동적 SQL 문 추가 -->
+ <sql id="criteria">
+ <!-- prefixOverrides="OR"는 여기서 딱히 사용되지 않는다 
+               ㄴ 만약에 이 문장이 붙기 전에 OR이 붙어있으면 그 OR을 지워버리겠다! 라는 의미  -->
+  <trim prefix="(" suffix=") AND " prefixOverrides="OR"> <!-- ⓐ(로 시작하고  ⓕ루프 끝나면 )와 AND를 붙여줌 --> 
+  <!-- 질문 : suffix에서 AND사용한 이유 
+          답변 : 루프 모두 끝난 후 )와 AND 붙여줌-->
+    <foreach collection="typeArr" item="type"> <!-- ⓑtypeArr로 값을 읽고   -->
+       <trim prefix="OR">   <!-- ⓓOR붙여주고 ⓔ foreach전부 종료하면 ⓕ로 이동-->
+	       <choose>
+	         <when test="type=='T'.toString()">   <!-- ⓒtype으로 들어 온 애의 속성이 T인지 확인 -->
+	           title like '%'|| #{keyword} ||'%'  <!--    ㄴ 맞다면 실행 아니면 넘어간 후 ⓓ로 이동 -->
+	         </when>
+	         <when test="type=='C'.toString()">    <!-- ⓒtype으로 들어 온 애의 속성이 C인지 확인 -->
+	           content like '%'|| #{keyword} ||'%' <!--    ㄴ 맞다면 실행 아니면 ⓓ로 이동 -->
+	         </when>
+	         <when test="type=='W'.toString()">    <!-- ⓒtype으로 들어 온 애의 속성이 W인지 확인 -->
+	           writer like '%'|| #{keyword} ||'%'  <!--    ㄴ 맞다면 실행 아니면 ⓓ로 이동 -->
+	         </when>
+	       </choose>
+       </trim>
+    </foreach>
+  </trim>
+ </sql>
+ 
+ 
+ 
+ 
+</mapper>

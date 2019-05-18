@@ -1,0 +1,73 @@
+spring_security 생성 - pom.xml, web.xml(한글처리[filter]) 복사
+
+
+https://mvnrepository.com/search?q=spring-security 
+
+4가지 라이브러리 필요함 
+spring-security-core : https://mvnrepository.com/artifact/org.springframework.security/spring-security-core/5.0.12.RELEASE
+spring-security-web  : https://mvnrepository.com/artifact/org.springframework.security/spring-security-web/5.0.12.RELEASE
+[ 원래 애만 있어도 됨! {우리는 웹으로 할꺼라서}]
+spring-security-config : https://mvnrepository.com/artifact/org.springframework.security/spring-security-config/5.0.12.RELEASE
+spring-security-taglibs : https://mvnrepository.com/artifact/org.springframework.security/spring-security-taglibs/5.0.12.RELEASE
+[ 좀더 편리하게 사용을 할 수 있게해줌 ]
+
+spring 폴더 아래
+  spring Bean configuration 생성 [ 이름 security-context.xml ] { 6번쨰 줄 http://www.springframework.org/schema/security/spring-security.xsd로 바꾸기 }
+  
+web.xml에
+<param-value>/WEB-INF/spring/security-context.xml</param-value> 추가
+
+security-context.xml에서 namespace가서 새로 생긴 security 누른 후 
+
+security-context.xml 안에
+ <security:http>  
+   <security:form-login/> 
+ </security:http>
+ <security:authentication-manager>
+ 
+ </security:authentication-manager>
+ 
+ 적기 !
+ 
+ 그리고 서버 실행해서 /로 설정해두고 실행 되는지 확인 
+ 
+---- 2교시 
+   security-context.xml 안에
+ <security:http>  
+   <!-- 특정한 URI에 접근할 떄 인터셉터를 설정하여 접근 제한하기  -->
+   <security:intercept-url pattern="/sample/all" access="permitAll"/>                      // 이 부분 
+   <security:intercept-url pattern="/sample/member" access="hasRole('ROLE_MEMBER')"/>     // 이 부분 넣기
+ <security:form-login/> 
+ </security:http>
+   두줄 넣기 
+   
+   
+SampleController 새로운 컨트롤러 만들기 
+
+서버 실행해서 log확인해보기
+
+web.xml에
+<!-- secirity filter 설정 -->
+	<filter>
+	  <filter-name>springSecurityFilterChain</filter-name>
+	  <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class> <!--DelegatingFilterProxy: 모든 필터를 대행해줌 ( 애 부터 선언 해줌  )  -->
+	</filter>
+	<filter-mapping>
+	 <filter-name>springSecurityFilterChain</filter-name>
+	 <url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+추가 
+
+서버 다시 실행해서 /sample/member으로 가보기
+[ 그럼 login페이지로 이동됨  ]
+
+security-context.xml 안에
+<security:intercept-url pattern="/sample/member" access="hasRole('ROLE_MEMBER')"/> - 이 부분 아래
+<security:intercept-url pattern="/sample/admin" access="hasRole('ROLE_ADMIN')"/> - 추가하기
+ 
+--- 마지막으로 서버 실행해서 admin 홈페이지 열어보기 
+		
+------------------------
+실행 순서
+web => web.xml(tomcat구동 관련) => root-context.xml // servlet-context

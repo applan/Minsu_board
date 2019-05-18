@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration> <!-- 환경설정 -->
+ <!-- Appenders : 출력방향 / 형태 지정 -->
+ <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+   <layout class="ch.qos.logback.classic.PatternLayout">
+      <pattern>%d{yyyy-MM-dd HH:mm:ss} %5level %logger{36} - %msg%n</pattern>
+   </layout>
+ </appender>
+ 
+ 
+
+	<logger name="com.spring.controller" level="info"/>
+	<logger name="com.spring.service" level="info"/>
+	
+ <!-- 3rdparty Loggers -->
+	<logger name="org.springframework.core" level="info"/> <!-- interface상속한 class개념 -->
+	
+	<logger name="org.springframework.beans" level="info"/> <!-- interface상속한 class개념 -->
+	
+	<logger name="org.springframework.context" level="info"/> <!-- interface상속한 class개념 -->
+	
+	<logger name="org.springframework.web" level="info"/> <!-- interface상속한 class개념 -->
+
+    <logger name="com.spring.mapper.BoardMapper" level="debug"/> <!-- RegisterMapper에서 오류난거 debug로 보여줌  -->	
+    <logger name="com.spring.mapper.ReplyMapper" level="debug"/> <!-- RegisterMapper에서 오류난거 debug로 보여줌  -->	
+    <logger name="com.spring.mapper.BoardAttachMapper" level="debug"/> <!-- RegisterMapper에서 오류난거 debug로 보여줌  -->	
+	<!-- Root Logger -->
+	
+	<root level="warn"> <!-- interface개념 -->
+		<appender-ref ref="console" />
+		<appender-ref ref="rolling" />
+	</root>
+	
+	
+	
+</configuration>
+

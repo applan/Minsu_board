@@ -1,0 +1,38 @@
+
+
+ 몇가지 정리 ----
+1. RedirectAttributes
+//red.addFlashAttribute() - 주소에 값이 안 보임 ( 많이 사용 됨 )
+//red.addAttribute()  - 주소에 값이 보임
+
+2. State 변경
+// pushState : 새롭게 조작해서 집어 넣어주는 것 
+// replaceState : 지금 현재 페이지를 조작하는것 ( 전에 있던 페이지 정보 없어짐 )
+
+3. sql 관련
+<!-- /*+ INDEX_DESC(spring_board pk_spring_board) */  : 힌트 주기 없어도 해당 힌트에 해당하는 값이 없어도 null안 뜸  -->
+<!-- [CDATA[값]] 값안에 있는 <,<=등등 <를 꺽쇠로 인식하기 때문에 CDATA를 사용해주면 값 안에 있는 꺽쇠가 실제 크다 작다..로 인식하게 해줌  -->
+
+4. 스크립트 관련
+-- 폼 태그가 가지고 있는 값을 가져올때
+ ㄴ value() : 'JavaScript' 꺼!
+ ㄴ val() : 'jquery'꺼!
+-- 값을 부여 하고 싶을떄 
+ ㄴ value(3) : 'JavaScript'에서 값을 부여 하고 싶을때   
+ ㄴ val(3) :  'jquery'에서 값을 부여 하고 싶을떄 
+ 
+ function 안에 function이 존재하면
+ 클로저 방식 ! [ 반드시 return이 있어야함 ]
+ 
+ 
+ -- 파일 업로드를 위해 해야하는 것
+ 1.pom.xml 추가 
+ 2.servlet-context 에 추가
+ 
+ ---
+ 
+ li data-list ="" data-type= "" (data-"원하는 대로 만들 수 있음")
+ ( 값을 부르고 싶을때 : data("type") = data-type값 부르기 
+ HTML5 에서 추가 됨.
+ 
+ 

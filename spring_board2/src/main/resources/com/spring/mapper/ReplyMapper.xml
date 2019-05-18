@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.mapper.ReplyMapper">
+  <insert id="insert">
+    insert into spring_reply(rno, bno, reply, replyer)
+    values(seq_reply.nextVal, #{bno}, #{reply}, #{replyer})
+  </insert>
+  
+<!--   <select id="getList" resultType="com.spring.domain.ReplyVO">
+    select * from spring_reply where bno = #{bno} order by rno desc
+  </select>
+ -->  
+ <select id="getList" resultType="com.spring.domain.ReplyVO">
+    <![CDATA[
+      select rn,bno,rno,reply,replyer,replydate,updatedate
+      from (select /*+ INDEX(spring_reply idx_reply)*/
+      rownum rn,bno,rno,reply,replyer,replydate,updatedate
+      from spring_reply where bno=#{bno} and rno>0
+      and rownum <= #{cri.pageNum}*#{cri.amount})
+      where rn > (#{cri.pageNum}-1)*#{cri.amount}
+    ]]>
+  </select>
+  
+  <!-- /*+ INDEX(spring_reply idx_reply)*/ : index기준으로 order by 해줘 [ 이유 : 속도를 조금이나마 빠르게 처리하기위해 ] -->
+  
+<!--   <select id = "getList" resultType="com.spring.domain.ReplyVO">
+   select * from spring_reply where bno = #{bno} order by rno desc
+<![CDATA[
+select rn, bno, rno, reply, replyer, replydate, updatedate 
+   from (select /*+ INDEX(spring_reply idx_reply)*/
+   rownum rn, bno, rno, reply, replyer, replydate, updatedate
+   from spring_reply where bno = #{bno} and rno > 0
+   and rownum <= #{cri.pageNum}*#{cri.amount})
+   where rn > (#{cri.pageNum}-1)*#{cri.amount}
+   ]]>
+</select> -->
+  
+  <update id="update">
+    update spring_reply set reply=#{reply}, updatedate=sysdate
+    where rno=#{rno}
+  </update>
+  
+  <delete id="delete">
+   delete from spring_reply where rno=#{rno}
+  </delete>
+  
+  <select id="get" resultType="com.spring.domain.ReplyVO">
+   select * from spring_reply where rno=#{rno}
+  </select>
+  
+  <select id="getCountByBno" resultType="int">
+     select count(*) from spring_reply where bno=#{bno}
+  </select>
+</mapper>
